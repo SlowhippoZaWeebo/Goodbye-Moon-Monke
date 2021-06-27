@@ -1,6 +1,7 @@
 # Goodbye Moon Momke
 
-When you flip someone off, you ascend to the heavens
+When you flip someone off, you ascend to the heavens.
+Hold down grip and A or X button depending on which hand you are using. Monke watch support for turning it on/off and adjusting speed will be added later.
 
 ## Credits
 
