@@ -37,7 +37,6 @@ Logger& getLogger()
 bool isRoom = false;
 bool enabled = false;
 bool lowGravModeEnabled = false;
-float globalGravity = -9.81;
 float thrust = 1000.0F;
 
 MAKE_HOOK_OFFSETLESS(PhotonNetworkController_OnJoinedRoom, void, Il2CppObject* self)
@@ -134,6 +133,8 @@ MAKE_HOOK_OFFSETLESS(Player_Update, void, Il2CppObject* self)
     INFO("player update was called");
     Player_Update(self);
     UpdateButton();
+    OVRInput::Update();
+    OVRInput::FixedUpdate();
 }
 
 extern "C" void setup(ModInfo& info)

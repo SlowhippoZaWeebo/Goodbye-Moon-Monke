@@ -4,10 +4,18 @@
     "name": "Goodbye Moon Monke",
     "id": "goodbyemoonmonke",
     "author": "Buzz Bzzz bzz BZZZ The 18th#0431",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "packageId": "com.AnotherAxiom.GorillaTag",
     "packageVersion": "1.0.8",
     "description": "When you flip someone off, you ascend to the heavens",
+    "dependencies": [
+        {
+            "id": "MonkeComputer",
+            "version": ">=1.4.0",
+            "downloadIfMissing": "https://github.com/RedBrumbler/MonkeComputer/releases/latest/download/MonkeComputer.qmod"
+        }
+    ],
+    "coverImage": "coverImage.png",
     "modFiles": [
         "libgoodbyemoonmonke.so"
     ],
