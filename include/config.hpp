@@ -1,7 +1,7 @@
 #pragma once
 
 struct config_t {
-    double multiplier = 1.0;
+    double power = 1.0;
     bool enabled = false;
 };
 

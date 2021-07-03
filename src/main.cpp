@@ -18,6 +18,11 @@
 #include "UnityEngine/Vector3.hpp"
 #include "UnityEngine/ForceMode.hpp"
 #include "UnityEngine/Transform.hpp"
+#include "GoodbyeMoonMonkeWatchView.hpp"
+#include "config.hpp"
+#include "monkecomputer/shared/GorillaUI.hpp"
+#include "monkecomputer/shared/Register.hpp"
+#include "custom-types/shared/register.hpp"
 
 ModInfo modInfo;
 
@@ -37,7 +42,7 @@ Logger& getLogger()
 bool isRoom = false;
 bool enabled = false;
 bool lowGravModeEnabled = false;
-float thrust = 1000.0F;
+float thrust = config.power * 1000.0;
 
 MAKE_HOOK_OFFSETLESS(PhotonNetworkController_OnJoinedRoom, void, Il2CppObject* self)
 {
@@ -55,32 +60,19 @@ MAKE_HOOK_OFFSETLESS(PhotonNetworkController_OnJoinedRoom, void, Il2CppObject* s
 
 void UpdateButton()
 {
-    if(!isRoom) {
-        enabled = false; return;
-    }
 
     using namespace GlobalNamespace;
     bool AInput = false;
-	bool BInput = false;
 	bool XInput = false;
-    bool YInput = false;
-	bool startInput = false;
     bool leftGripInput = false;
     bool rightGripInput = false;
-    bool leftTriggerInput = false;
-    bool rightTriggerInput = false;
 	//Remove whatever inputs you dont need
     AInput = OVRInput::Get(OVRInput::Button::One, OVRInput::Controller::RTouch);
-    BInput = OVRInput::Get(OVRInput::Button::Two, OVRInput::Controller::RTouch);
     XInput = OVRInput::Get(OVRInput::Button::One, OVRInput::Controller::LTouch);
-    YInput = OVRInput::Get(OVRInput::Button::Two, OVRInput::Controller::LTouch);
-    startInput = OVRInput::Get(OVRInput::Button::Start, OVRInput::Controller::LTouch);
     leftGripInput = OVRInput::Get(OVRInput::Button::PrimaryHandTrigger, OVRInput::Controller::LTouch);
     rightGripInput = OVRInput::Get(OVRInput::Button::PrimaryHandTrigger, OVRInput::Controller::RTouch);
-    leftTriggerInput = OVRInput::Get(OVRInput::Button::PrimaryIndexTrigger, OVRInput::Controller::LTouch);
-    rightTriggerInput = OVRInput::Get(OVRInput::Button::PrimaryIndexTrigger, OVRInput::Controller::RTouch);
 
-    if (isRoom)
+    if (isRoom && config.enabled)
     {
         // If you want just a single button press then do if (AInput) replace AInput with whatever button you want
         if (AInput && rightGripInput || XInput && leftGripInput)
@@ -113,16 +105,21 @@ void UpdateButton()
         GameObject* playerGameObject = playerPhysics->get_gameObject();
         if(playerGameObject == nullptr) return;
 
-        if(isRoom) {
+        if(isRoom && config.enabled) {
             if(enabled) {
                 if(lowGravModeEnabled) {
                     lowGravModeEnabled = false;
-                    playerPhysics->set_useGravity(true);
+                    playerPhysics->set_useGravity(false);
                     playerPhysics->AddForce(Vector3::get_up() * thrust);
                 } else if(!lowGravModeEnabled){
                     lowGravModeEnabled = true;
+                    playerPhysics->set_useGravity(true);
                 }
+            } else {
+                playerPhysics->set_useGravity(true);
             }
+        } else {
+            playerPhysics->set_useGravity(true);
         }
     }
 
@@ -141,17 +138,22 @@ extern "C" void setup(ModInfo& info)
 {
     info.id = ID;
     info.version = VERSION;
-
     modInfo = info;
+
 }
 
 extern "C" void load()
 {
     getLogger().info("Loading mod...");
 
+    GorillaUI::Init();
+
     INSTALL_HOOK_OFFSETLESS(getLogger(), PhotonNetworkController_OnJoinedRoom, il2cpp_utils::FindMethodUnsafe("", "PhotonNetworkController", "OnJoinedRoom", 0));
 	INSTALL_HOOK_OFFSETLESS(getLogger(), Player_Update, il2cpp_utils::FindMethodUnsafe("GorillaLocomotion", "Player", "Update", 0));
     INSTALL_HOOK_OFFSETLESS(getLogger(), GorillaTagManager_Update, il2cpp_utils::FindMethodUnsafe("", "GorillaTagManager", "Update", 0));
+
+    custom_types::Register::RegisterType<GoodbyeMoonMonke::GoodbyeMoonMonkeWatchView>(); 
+    GorillaUI::Register::RegisterWatchView<GoodbyeMoonMonke::GoodbyeMoonMonkeWatchView*>("Goodbye Moon Monke", VERSION);
     
     getLogger().info("Mod loaded!");
 }
