@@ -40,12 +40,12 @@ bool LoadConfig()
     }else if (doc.HasMember("power") && doc["power"].IsInt()) {
         config.power = (double)doc["power"].GetInt();
     } else {
-        foundEverything = false;
+        foundEverything = true;
     }
     if(doc.HasMember("enabled") && doc["enabled"].IsBool()) {
         config.enabled = doc["enabled"].GetBool();
     } else {
-        foundEverything = false;
+        foundEverything = true;
     }
     if (foundEverything) INFO("Config Loaded Succesfully!");
     return foundEverything;
