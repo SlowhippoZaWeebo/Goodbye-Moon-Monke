@@ -2,7 +2,7 @@
 
 struct config_t {
     double power = 1.0;
-    bool enabled = false;
+    bool enabled = true;
 };
 
 extern config_t config;
